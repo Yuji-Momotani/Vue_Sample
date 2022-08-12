@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <button @click="getDogImage">画像取得</button><!-- button押下時、画像取得 -->
+    <img :src="dogImage" alt="わんちゃん画像">
+    <input type="text" v-model="watchTest"><!-- リアルタイムで、画像取得(入力文字とは関係ない画像が取得される) -->
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+  <script>
+    const url = 'https://dog.ceo/api/breeds/image/random'
+    const options = {
+      method:'get'
+    }
+
+    let app = new Vue({
+      el:'#app',
+      data(){
+        return{
+          dogImage:'',
+          watchTest:''
+        }
+      },
+      methods: {
+        async getDogImage(){
+          const response = await fetch(url,options)
+            .then(response => response.json())
+          // console.log(response.message)
+          this.dogImage = response.message
+        }
+      },
+      watch:{
+        watchTest(){
+          this.watchDogImage() 
+        }
+      },
+      created(){
+        this.getDogImage()
+        this.watchDogImage = _.debounce(this.getDogImage,1000) //appに関数(watchDogImage)を登録
+      }
+    })
+  </script>
+</body>
+</html>
